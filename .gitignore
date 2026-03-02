@@ -1,0 +1,34 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# debug
+npm-debug.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+.env
+.env.production
+
+#js
+*.js
+coverage/*
+
+
+# alloy
+config.alloy
+
+# serverless
+.serverless/
+dist/
+
+# pnpm
+pnpm-lock.yaml

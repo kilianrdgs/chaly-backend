@@ -1,0 +1,113 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  Id                Int       @id @default(autoincrement())
+  PhotoUrl          String?
+  XpTotal           Int       @default(0)
+  Created_at        DateTime  @default(now())
+  Moderator         Boolean   @default(false)
+  Pseudo            String?
+  PhoneNumber       String    @unique
+  IsVerified        Boolean   @default(false)
+  TokenNotification String?
+  IsCertified       Boolean   @default(false)
+  Description       String?   @db.VarChar(280)
+  BackgroundName    String?
+  LastActiveAt      DateTime? @db.Timestamptz(3)
+  LastAnalyseAt     DateTime? @db.Timestamptz(3)
+  LastPostAt        DateTime? @db.Timestamptz(3)
+  PersonalityMode   String    @default("default")
+
+  Comments Comments[]
+  Cuites   Cuites[]
+  Likes    Likes[]
+
+  @@index([LastActiveAt], map: "idx_user_last_active_at")
+  @@index([LastAnalyseAt], map: "idx_user_last_analyse_at")
+  @@index([LastPostAt], map: "idx_user_last_post_at")
+}
+
+model Cuites {
+  Id           Int         @id @default(autoincrement())
+  Id_User      Int
+  Description  String?
+  Date         DateTime
+  Created_at   DateTime    @default(now())
+  Titre        String?
+  Id_Challenge Int?
+  ImageUrl     String?
+  challenge    Challenges? @relation(fields: [Id_Challenge], references: [Id])
+  User         Users       @relation(fields: [Id_User], references: [Id], onDelete: Cascade)
+  Likes        Likes[]
+  isAnalyzed   Boolean     @default(true)
+  IsPublished  Boolean     @default(true)
+
+  @@index([Id_Challenge])
+  @@index([Id_Challenge, Id_User])
+}
+
+model Invalid_Tokens {
+  Id         Int      @id @default(autoincrement())
+  Token      String   @unique
+  Created_At DateTime @default(now())
+}
+
+model PhoneVerifications {
+  Id        Int      @id @default(autoincrement())
+  Phone     String   @unique
+  Code      String
+  Retries   Int      @default(0)
+  CreatedAt DateTime @default(now())
+  ExpiresAt DateTime
+}
+
+model Likes {
+  Id         Int      @id @default(autoincrement())
+  Id_User    Int
+  Id_Cuite   Int
+  Created_At DateTime @default(now())
+  Cuite      Cuites   @relation(fields: [Id_Cuite], references: [Id], onDelete: Cascade)
+  User       Users    @relation(fields: [Id_User], references: [Id], onDelete: Cascade)
+
+  @@unique([Id_User, Id_Cuite])
+}
+
+model Comments {
+  Id          Int        @id @default(autoincrement())
+  Id_Cuite    Int
+  Id_User     Int
+  Content     String
+  Created_At  DateTime   @default(now())
+  Parent_Id   Int?
+  Reply_Count Int        @default(0)
+  User        Users      @relation(fields: [Id_User], references: [Id], onDelete: Cascade)
+  Parent      Comments?  @relation("CommentReplies", fields: [Parent_Id], references: [Id])
+  Replies     Comments[] @relation("CommentReplies")
+
+  @@index([Id_Cuite, Parent_Id, Created_At(sort: Desc)])
+  @@index([Parent_Id, Created_At(sort: Desc)])
+}
+
+model Challenges {
+  Id       Int      @id @default(autoincrement())
+  Start_At DateTime
+  End_At   DateTime
+  Cuite    Cuites[]
+}
+
+model DailyChallenges {
+  Id          Int       @id @default(autoincrement())
+  Title       String
+  Description String?
+  Realized    Boolean?  @default(false)
+  Used_At     DateTime? @db.Timestamptz(6)
+  Created_At  DateTime? @default(now()) @db.Timestamptz(6)
+}
