@@ -1,0 +1,88 @@
+org: chaly
+app: chaly-prod
+service: api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-west-3
+  stage: prod
+  logs:
+    httpApi: true
+  httpApi:
+    cors: true
+    payload: "2.0"
+    shouldStartNameWithService: true
+  environment:
+    DATABASE_URL: ${ssm:/chaly/DATABASE_URL}
+    NODE_ENV: production
+    ENV: PROD
+    API_KEY: ${ssm:/chaly/API_KEY}
+    CLE_SERVEUR: ${ssm:/chaly/CLE_SERVEUR}
+    AWS_S3_BUCKET: chaly-media
+    ACCESS_TOKEN_SECRET: ${ssm:/chaly/ACCESS_TOKEN_SECRET}
+    REFRESH_TOKEN_SECRET: ${ssm:/chaly/REFRESH_TOKEN_SECRET}
+    SNS_PLATFORM_APPLICATION_ARN_IOS: ${ssm:/chaly/SNS_PLATFORM_APPLICATION_ARN_IOS}
+    SNS_PLATFORM_APPLICATION_ARN_ANDROID: ${ssm:/chaly/SNS_PLATFORM_APPLICATION_ARN_ANDROID}
+  vpc:
+    securityGroupIds:
+      - sg-052d9cdb5230101b9
+    subnetIds:
+      - subnet-0db66631bb0e17003
+      - subnet-0f07bc0c4a7b62f79
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:*
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:GetParameters
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
+            - ec2:AssignPrivateIpAddresses
+            - ec2:UnassignPrivateIpAddresses
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource: "arn:aws:lambda:eu-west-3:762233728636:function:send-sms-topmessage"
+        - Effect: Allow
+          Action:
+            - sns:Publish
+            - sns:CreatePlatformEndpoint
+            - sns:GetEndpointAttributes
+            - sns:SetEndpointAttributes
+            - sns:ListTopics
+            - sns:CreateTopic
+            - sns:Subscribe
+          Resource: "*"
+
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: false
+    exclude:
+      - "@aws-sdk"
+
+functions:
+  lambda:
+    handler: src/app.handler
+    timeout: 15
+    events:
+      - httpApi: "*"
+
+package:
+  patterns:
+    - node_modules/@prisma/client/**
+    - node_modules/.prisma/**
+    - "!**/*.ts"
+    - dist/**

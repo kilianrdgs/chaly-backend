@@ -1,0 +1,60 @@
+org: chaly
+app: chaly-prod
+service: public
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-west-3
+  stage: prod
+
+  logs:
+    restApi: true
+
+  environment:
+    NODE_ENV: production
+    ENV: PROD
+    BEDROCK_ACCESS_KEY_ID: ${ssm:/chaly/AWS_ACCESS_KEY_ID}
+    BEDROCK_SECRET_ACCESS_KEY: ${ssm:/chaly/AWS_SECRET_ACCESS_KEY}
+    API_TOP_MESSAGE_KEY: ${ssm:/chaly/API_TOP_MESSAGE_KEY}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:GetParameters
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - bedrock:InvokeModel
+          Resource:
+            - "arn:aws:bedrock:eu-west-3:762233728636:inference-profile/eu.amazon.nova-lite-v1:0"
+            - "arn:aws:bedrock:eu-west-3:762233728636:inference-profile/eu.mistral.pixtral-large-2502-v1:0"
+            - "arn:aws:bedrock:eu-west-3:762233728636:inference-profile/eu.anthropic.claude-3-7-sonnet-20250219-v1:0"
+        - Effect: Allow
+          Action:
+            - geo:SearchPlaceIndexForPosition
+          Resource:
+            - "arn:aws:geo:eu-west-1:762233728636:place-index/chaly-index"
+
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: false
+    exclude:
+      - "@aws-sdk"
+
+functions:
+  lambda:
+    handler: src/index.handler
+    timeout: 15
+    events:
+      - httpApi: "*"
+
+package:
+  patterns:
+    - "!**/*.ts"
+    - dist/**

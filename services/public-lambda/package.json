@@ -1,0 +1,25 @@
+{
+  "name": "public-lambda",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/dev.ts",
+    "clean": "rm -rf dist src/**/*.js src/**/*.js.map",
+    "build": "tsc",
+    "deploy": "serverless deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.24",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.21.4",
+    "npm-run-all2": "^6.2.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.927.0",
+    "@aws-sdk/client-location": "^3.943.0",
+    "@hono/node-server": "^1.19.6",
+    "expo-server-sdk": "^4.0.0",
+    "hono": "^4.10.4"
+  }
+}

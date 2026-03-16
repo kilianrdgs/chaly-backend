@@ -1,0 +1,13 @@
+-- CreateTable
+CREATE TABLE "Memes" (
+    "Id" SERIAL NOT NULL,
+    "ImageUrl" TEXT NOT NULL,
+    "Created_At" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "IsActive" BOOLEAN NOT NULL DEFAULT true,
+    "Id_User" INTEGER NOT NULL,
+
+    CONSTRAINT "Memes_pkey" PRIMARY KEY ("Id")
+);
+
+-- AddForeignKey
+ALTER TABLE "Memes" ADD CONSTRAINT "Memes_Id_User_fkey" FOREIGN KEY ("Id_User") REFERENCES "Users"("Id") ON DELETE CASCADE ON UPDATE CASCADE;

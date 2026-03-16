@@ -1,0 +1,36 @@
+{
+  "name": "auth-lambda",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm run prisma:generate && ts-node-dev --respawn --clear src/dev.ts",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "build": "tsc",
+    "deploy": "serverless deploy",
+    "prisma:generate": "cp ../../prisma/schema.prisma prisma/schema.prisma && npx prisma generate"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^1.19.6",
+    "@hono/zod-validator": "^0.7.4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.10.0",
+    "@types/uuid": "^10.0.0",
+    "esbuild": "^0.21.4",
+    "npm-run-all2": "^6.2.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2",
+    "vitest": "^4.0.16",
+    "zod": "^4.1.12"
+  },
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.922.0",
+    "@prisma/client": "^6.18.0",
+    "ajv": "^8.17.1",
+    "hono": "^4.10.4",
+    "jsonwebtoken": "^9.0.2",
+    "libphonenumber-js": "^1.12.25",
+    "prisma": "^6.18.0",
+    "uuid": "^13.0.0"
+  }
+}
