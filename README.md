@@ -1,5 +1,7 @@
 # Chaly Backend
 
+Présentation du parcours utilisateur disponible ici 👉 https://youtube.com/shorts/g5iDixabZ-E?feature=share
+
 Backend serverless pour **Chaly**, une application mobile sociale de partage de photos avec défis quotidiens et gamification. Le projet est composé de deux microservices AWS Lambda : une API principale (Express) et un service d'authentification léger (Hono).
 
 ## Contexte du projet
