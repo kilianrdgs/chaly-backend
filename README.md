@@ -38,13 +38,13 @@ Le backend suit une architecture **microservices serverless** déployée sur AWS
 │  │Auth Lambda │  │  │  API Lambda    │  │  │ Public Lambda  │   │
 │  │  (Hono)    │  │  │  (Express)     │  │  │   (Hono)       │   │
 │  └─────┬──────┘  │  └───────┬────────┘  │  └───────┬────────┘   │
-│        │         │          │           │          │             │
-│        │         │    ┌─────┼──────┐    │          │             │
-│        │         │    │     │      │    │          ▼             │
-│        ▼         │    ▼     ▼      ▼    │    ┌───────────┐      │
-│  ┌──────────┐    │  ┌────┐┌────┐┌─────┐│    │  Bedrock   │      │
-│  │PostgreSQL│◄───┼──│ DB ││ S3 ││Bedr.││    │(Analyse IA)│      │
-│  │ (Prisma) │    │  └────┘└────┘└─────┘│    └───────────┘      │
+│        │         │          │           │          │            │
+│        │         │    ┌─────┼──────┐    │          │            │
+│        │         │    │     │      │    │          ▼            │
+│        ▼         │    ▼     ▼      ▼    │    ┌────────────┐     │
+│  ┌──────────┐    │  ┌────┐┌────┐┌─────┐ │    │  Bedrock   │     │
+│  │PostgreSQL│◄───┼──│ DB ││ S3 ││Bedr.│ │    │(Analyse IA)│     │
+│  │ (Prisma) │    │  └────┘└────┘└─────┘ │    └────────────┘     │
 │  └──────────┘    │                      │                       │
 └──────────────────┴──────────────────────┴───────────────────────┘
 ```
@@ -52,6 +52,7 @@ Le backend suit une architecture **microservices serverless** déployée sur AWS
 **Organisation du code** : chaque domaine métier est structuré en couches `controller → service → repository`, avec séparation claire des responsabilités.
 
 **Trois microservices** :
+
 - **API Lambda (Express)** : API principale authentifiée — utilisateurs, publications, social, défis, notifications, admin, popups
 - **Auth Lambda (Hono)** : service d'authentification dédié (OTP, JWT, tokens)
 - **Public Lambda (Hono)** : endpoints publics sans authentification — analyse d'images par IA
@@ -243,9 +244,9 @@ Toutes les routes sont préfixées par `/api/`. Documentation Swagger complète 
 
 ### Health — `/api/health`
 
-| Méthode | Route      | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| GET     | `/health/` | Health check (état DB, timestamp)        |
+| Méthode | Route      | Description                       |
+| ------- | ---------- | --------------------------------- |
+| GET     | `/health/` | Health check (état DB, timestamp) |
 
 ### App — `/api/app`
 
@@ -278,29 +279,29 @@ Toutes les routes sont préfixées par `/api/`. Documentation Swagger complète 
 
 ### Social — `/api/social`
 
-| Méthode | Route                               | Description              |
-| ------- | ----------------------------------- | ------------------------ |
-| GET     | `/social/cuites/:cuiteId/comments`  | Lister les commentaires  |
-| POST    | `/social/cuites/:cuiteId/comment`   | Commenter (multipart)    |
-| DELETE  | `/social/cuites/:commentId/comment` | Supprimer un commentaire |
-| GET     | `/social/cuites/:cuiteId/likes`     | Lister les likes         |
-| POST    | `/social/cuites/:cuiteId/like`      | Liker                    |
-| DELETE  | `/social/cuites/:cuiteId/like`      | Retirer un like          |
-| POST    | `/social/users/:userId/block`       | Bloquer un utilisateur   |
-| DELETE  | `/social/users/:userId/block`       | Débloquer un utilisateur |
+| Méthode | Route                               | Description               |
+| ------- | ----------------------------------- | ------------------------- |
+| GET     | `/social/cuites/:cuiteId/comments`  | Lister les commentaires   |
+| POST    | `/social/cuites/:cuiteId/comment`   | Commenter (multipart)     |
+| DELETE  | `/social/cuites/:commentId/comment` | Supprimer un commentaire  |
+| GET     | `/social/cuites/:cuiteId/likes`     | Lister les likes          |
+| POST    | `/social/cuites/:cuiteId/like`      | Liker                     |
+| DELETE  | `/social/cuites/:cuiteId/like`      | Retirer un like           |
+| POST    | `/social/users/:userId/block`       | Bloquer un utilisateur    |
+| DELETE  | `/social/users/:userId/block`       | Débloquer un utilisateur  |
 | PATCH   | `/social/cuites/:cuiteId/blur`      | Toggle flou sur une photo |
-| GET     | `/social/memes`                     | Lister les memes         |
-| POST    | `/social/memes`                     | Créer un meme (multipart)|
-| DELETE  | `/social/memes/:memeId`             | Supprimer un meme        |
+| GET     | `/social/memes`                     | Lister les memes          |
+| POST    | `/social/memes`                     | Créer un meme (multipart) |
+| DELETE  | `/social/memes/:memeId`             | Supprimer un meme         |
 
 ### Défis — `/api/challenges`
 
-| Méthode | Route                              | Description                |
-| ------- | ---------------------------------- | -------------------------- |
-| POST    | `/challenges/`                     | Créer un défi              |
-| GET     | `/challenges/:challengeId/winners` | Gagnants d'un défi         |
-| POST    | `/challenges/vote`                 | Voter pour une publication |
-| GET     | `/challenges/:challengeId/votes/stats` | Statistiques des votes |
+| Méthode | Route                                  | Description                |
+| ------- | -------------------------------------- | -------------------------- |
+| POST    | `/challenges/`                         | Créer un défi              |
+| GET     | `/challenges/:challengeId/winners`     | Gagnants d'un défi         |
+| POST    | `/challenges/vote`                     | Voter pour une publication |
+| GET     | `/challenges/:challengeId/votes/stats` | Statistiques des votes     |
 
 ### Notifications — `/api/notifications`
 
@@ -313,31 +314,31 @@ Toutes les routes sont préfixées par `/api/`. Documentation Swagger complète 
 
 ### Popups — `/api/popup`
 
-| Méthode | Route          | Description                  |
-| ------- | -------------- | ---------------------------- |
-| GET     | `/popup/`      | Récupérer la popup active    |
-| POST    | `/popup/seen`  | Marquer une popup comme vue  |
+| Méthode | Route         | Description                 |
+| ------- | ------------- | --------------------------- |
+| GET     | `/popup/`     | Récupérer la popup active   |
+| POST    | `/popup/seen` | Marquer une popup comme vue |
 
 ### Admin — `/api/admin`
 
-| Méthode | Route                        | Description                          |
-| ------- | ---------------------------- | ------------------------------------ |
-| GET     | `/admin/get-stats`           | Statistiques générales               |
-| POST    | `/admin/analytics/stats`     | Statistiques analytics               |
-| POST    | `/admin/registration/stats`  | Statistiques d'inscription           |
-| GET     | `/admin/test`                | Route de test                        |
-| POST    | `/admin/daily-challenge`     | Créer un défi quotidien (DEV only)   |
-| POST    | `/admin/send-notification`   | Envoyer une notification (DEV only)  |
-| POST    | `/admin/popup`               | Créer une popup (DEV only)           |
+| Méthode | Route                       | Description                         |
+| ------- | --------------------------- | ----------------------------------- |
+| GET     | `/admin/get-stats`          | Statistiques générales              |
+| POST    | `/admin/analytics/stats`    | Statistiques analytics              |
+| POST    | `/admin/registration/stats` | Statistiques d'inscription          |
+| GET     | `/admin/test`               | Route de test                       |
+| POST    | `/admin/daily-challenge`    | Créer un défi quotidien (DEV only)  |
+| POST    | `/admin/send-notification`  | Envoyer une notification (DEV only) |
+| POST    | `/admin/popup`              | Créer une popup (DEV only)          |
 
 ### Public Lambda (service séparé)
 
-| Méthode | Route                    | Description                                      |
-| ------- | ------------------------ | ------------------------------------------------ |
-| GET     | `/`                      | Health check du service public                   |
-| POST    | `/auth/request-code`     | Demander un code OTP (proxy vers auth-lambda)    |
-| POST    | `/pictures/analyse`      | Analyser une image par IA (Bedrock)              |
-| GET     | `/send-notification`     | Envoyer une notification                         |
+| Méthode | Route                | Description                                   |
+| ------- | -------------------- | --------------------------------------------- |
+| GET     | `/`                  | Health check du service public                |
+| POST    | `/auth/request-code` | Demander un code OTP (proxy vers auth-lambda) |
+| POST    | `/pictures/analyse`  | Analyser une image par IA (Bedrock)           |
+| GET     | `/send-notification` | Envoyer une notification                      |
 
 ## Déploiement
 
